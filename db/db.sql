@@ -1,7 +1,7 @@
 
 
-create database blog_app;
-use blog_app;
+create database blogapp;
+use blogapp;
 
 CREATE DATABASE IF NOT EXISTS blog_app ;
 USE blog_app;
