@@ -15,11 +15,14 @@ class Auth
     // Method to register a new user
     public function register(string $username, string $email, string $password, string $picture_path): array
     {
+        try{
+
+
         // Check if user already exists
         $stmt = $this->pdo->prepare("SELECT id FROM users WHERE email = :email");
         $stmt->execute(['email' => $email]);
         if ($stmt->rowCount() > 0) {
-            return ["error" => "This email already exists", "ok" => false];
+            return ["status" => "error", "message"=>"This email already exists", "ok" => false];
         }
 
         // Hash the password
@@ -60,10 +63,13 @@ class Auth
             setcookie("user_id", $userId, time() + (86400 * 7), "/", "", true, true);
             setcookie("auth_token", $token, time() + (86400 * 7), "/", "", true, true);
 
-            return ["error" => null, "ok" => true];
+            return ["message" => "success","message"=>"user created ", "ok" => true];
         }
 
-        return ["error" => "Registration failed", "ok" => false];
+        return ["status" => "error","message" => "Registration failed", "ok" => false];
+    }catch(PDOException $e){
+        return ['status' => 'error', 'message' => 'Failed to register user: ' . $e->getMessage() , "ok"=> true];
+    }
     }
 
     // Method to log in a user
@@ -80,16 +86,16 @@ class Auth
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         // Verify the password
-        if (password_verify($password, $user['password'])) {
+        if ($user && password_verify($password, $user['password'])) {
             // Start a session for the user
             session_start();
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
 
-            return "Login successful.";
+            return ['status' => 'success', 'message' => 'Logged in successfully' , "ok"=>true];
         }
 
-        return "Invalid credentials.";
+        return ['status' => "error", "message" => "Invalid password" , "ok"=>false];
     }
 
     // Method to check authentication
