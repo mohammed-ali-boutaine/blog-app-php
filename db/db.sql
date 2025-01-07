@@ -42,22 +42,34 @@ CREATE TABLE blogs (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE commentaires (
+CREATE TABLE comments ( 
     id INT AUTO_INCREMENT PRIMARY KEY,
     blog_id INT NOT NULL, 
     user_id INT NOT NULL,
     content TEXT NOT NULL,
+    likes INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (blog_id) REFERENCES blogs   (id) ON DELETE CASCADE,
+    FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE TABLE likes (
+-- Likes for blogs
+CREATE TABLE blog_likes (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    blog_id INT NOT NULL, 
-    user_id INT NOT NULL, 
+    blog_id INT NOT NULL,
+    user_id INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (blog_id) REFERENCES blogs (id) ON DELETE CASCADE,
+    FOREIGN KEY (blog_id) REFERENCES blogs(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- Likes for comments
+CREATE TABLE comment_likes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    comment_id INT NOT NULL,
+    user_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
@@ -79,7 +91,7 @@ CREATE TABLE signals (
     ref_id INT NOT NULL, -- resource id
     type ENUM('blog', 'comment') NOT NULL, -- Differentiates between blog and comment
     user_id INT NOT NULL,
-    reason VARCHAR(255) NOT NULL, =
+    reason VARCHAR(255) NOT NULL, 
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CHECK (type IN ('blog', 'comment'))

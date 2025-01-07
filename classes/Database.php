@@ -53,6 +53,14 @@ class Database
     {
         $this->pdo = null;
     }
+
+    // get post
+
+    public function getBlogs(){
+        
+    }
+
+
 }
 
 
