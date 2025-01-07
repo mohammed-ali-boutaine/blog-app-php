@@ -5,7 +5,7 @@ require_once 'Database.php';
 class Auth
 {
     private PDO $pdo;
-    private ?string $error = null;
+    // private ?string $error = null;
 
     public function __construct(Database $database)
     {

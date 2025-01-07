@@ -1,0 +1,483 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+     .comments-section::-webkit-scrollbar {
+  width: 8px; /* Set the width of the scrollbar */
+}
+
+.comments-section::-webkit-scrollbar-track {
+  background: transparent; /* Make the track transparent */
+}
+
+.comments-section::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.6); /* Black with transparency */
+  border-radius: 10px; /* Make the scrollbar thumb rounded */
+}
+  </style>
+</head>
+
+<body class="bg-zinc-900 text-white">
+
+  <!-- ------------------------------------------------------------------------------------- -->
+  <!-- ------------------------------------------------------------------------------------- -->
+  <!-- ------------------------------------------------------------------------------------- -->
+  <!-- ------------------------------------------------------------------------------------- -->
+  <!-- ------------------------------------------------------------------------------------- -->
+
+  <!-- ------------------------------------------------------------------------------------- -->
+  <main class="max-w-screen-xl mx-auto px-5 mt-16 ">
+    <div class="flex flex-col md:flex-row rounded">
+      <aside
+        class="w-full md:w-1/5 p-4 bg-gray-950 space-y-6 text-center rounded"
+      >
+        <div class="bg-gray-600 p-4 rounded hover:bg-gray-500 cursor-pointer">
+          Tags
+        </div>
+        <div class="bg-gray-600 p-4 rounded hover:bg-gray-500 cursor-pointer">
+          Popular Posts
+        </div>
+        <div class="bg-gray-600 p-4 rounded hover:bg-gray-500 cursor-pointer">
+          Announcements
+        </div>
+      </aside>
+      <!-- Posts Section -->
+      <section class="w-full px-4 space-y-8">
+        <!-- Post Navigation -->
+        <div class="flex justify-center space-x-4 mb-4">
+          <button
+            class="bg-gray-950 text-white px-4 py-2 rounded hover:bg-gray-500"
+          >
+            Public Posts
+          </button>
+          <button
+            class="bg-gray-950 text-white px-4 py-2 rounded hover:bg-gray-500"
+          >
+            Your Posts
+          </button>
+        </div>
+
+        <!-- Posts -->
+        <div id="post" class="  flex box-border border-2 border-slate-800		mb-4  rounded-lg ">
+          <!-- Single Post -->
+          <!-- ------------------------------------------------------------------------------------- -->
+
+          <div
+            class="max-w-2xl shadow-md rounded-lg overflow-hidden  border-gray-700 bg-gray-950"
+          >
+            <!-- Post Content -->
+            <div class="p-6 relative">
+              <!-- Three-dot Menu -->
+              <div class="absolute top-4 right-4">
+                <button
+                  class="text-gray-300 hover:text-gray-100 focus:outline-none"
+                  id="menu-button"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 6v.01M12 12v.01M12 18v.01"
+                    />
+                  </svg>
+                </button>
+                <!-- Menu Popup -->
+                <div
+                  id="menu-popup"
+                  class="hidden absolute right-0 mt-2 bg-gray-800 text-gray-300 rounded shadow-lg z-10"
+                >
+                  <ul>
+                    <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
+                      Edit
+                    </li>
+                    <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
+                      Delete
+                    </li>
+                    <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
+                      Signal
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Author Info -->
+              <div class="flex items-center space-x-4 mb-4">
+                <img
+                  class="w-12 h-12 rounded-full object-cover"
+                  src="https://via.placeholder.com/150"
+                  alt="Author Image"
+                />
+                <div>
+                  <p class="text-white font-bold text-lg">John Doe</p>
+                  <p class="text-gray-400 text-sm">Created at: Dec 18, 2024</p>
+                </div>
+              </div>
+
+              <!-- Post Title -->
+              <h2 class="text-2xl font-semibold text-gray-100 mb-2">
+                The Art of Minimalism
+              </h2>
+
+              <!-- Post Content -->
+              <p class="text-gray-400 text-sm" id="post-content">
+                Minimalism is about removing the unnecessary to focus on what
+                truly matters. Learn how to simplify your life and embrace the
+                essentials...
+                <span id="full-content" class="hidden">
+                  Minimalism is not just about decluttering your home; it’s
+                  about decluttering your mind and soul. It is a philosophy that
+                  encourages intentional living and finding joy in simplicity.
+                </span>
+              </p>
+
+              <!-- Read More Button -->
+              <button
+                id="read-more-btn"
+                class="text-blue-400 text-sm font-medium hover:underline"
+              >
+                Read more
+              </button>
+            </div>
+
+            <!-- Post Image -->
+            <img
+              class="w-full h-64 object-cover"
+              src="https://via.placeholder.com/800x400"
+              alt="Post Image"
+            />
+
+            <!-- Buttons: Like and Comment -->
+            <div class="flex items-center justify-between p-4">
+              <div class="flex space-x-4">
+                <!-- Like Button -->
+                <button
+                  class="flex items-center space-x-1 text-gray-400 hover:text-red-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M14 9l-.882-3.528a1 1 0 00-.97-.772H9a1 1 0 00-.707.293l-3 3a1 1 0 00-.293.707v6a1 1 0 001 1h3v4a1 1 0 001 1h3a1 1 0 001-1v-4h3a1 1 0 001-1v-2.768a2 2 0 00-.586-1.414l-2-2A2 2 0 0014 9z"
+                    />
+                  </svg>
+                  <span class="text-sm">24</span>
+                </button>
+
+                <!-- Comment Button -->
+                <button
+                  class="flex items-center space-x-1 text-gray-400 hover:text-blue-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M3 10v11a1 1 0 001 1h7a1 1 0 001-1v-5h5a1 1 0 001-1V3a1 1 0 00-1-1H4a1 1 0 00-1 1v7z"
+                    />
+                  </svg>
+                  <span class="text-sm">12</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Comments Section -->
+          <div
+            class="comments-section rounded-lg p-6 bg-gray-900 text-gray-200  h-full max-h-[520px] overflow-y-scroll "
+          >
+            <!-- Add New Comment -->
+            <div>
+              <textarea
+                class="w-full p-3 rounded-md bg-gray-800 text-gray-200 placeholder-gray-400"
+                rows="3"
+                placeholder="Add a comment..."
+              ></textarea>
+              <button
+                class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
+              >
+                Post Comment
+              </button>
+            </div>
+            <h3 class="text-lg font-bold mb-4">Comments</h3>
+
+            <div class="space-y-4">
+              <!-- Comment 1 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">Jane Doe</p>
+                <p class="text-sm text-gray-400">
+                  This is a fantastic article on minimalism! Thank you for
+                  sharing.
+                </p>
+              </div>
+              <!-- Comment 2 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">John Smith</p>
+                <p class="text-sm text-gray-400">
+                  I’ve been looking to simplify my life, and this gave me great
+                  insights.
+                </p>
+              </div>
+              <!-- Comment 2 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">John Smith</p>
+                <p class="text-sm text-gray-400">
+                  I’ve been looking to simplify my life, and this gave me great
+                  insights.
+                </p>
+              </div>
+              <!-- Comment 2 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">John Smith</p>
+                <p class="text-sm text-gray-400">
+                  I’ve been looking to simplify my life, and this gave me great
+                  insights.
+                </p>
+              </div>
+              <!-- Comment 2 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">John Smith</p>
+                <p class="text-sm text-gray-400">
+                  I’ve been looking to simplify my life, and this gave me great
+                  insights.
+                </p>
+              </div>
+              <!-- Add more comments here -->
+            </div>
+          </div>
+
+          <!-- ------------------------------------------------------------------------------------- -->
+        </div>
+        <div id="post" class="  flex box-border border-2 border-slate-800		mb-4  rounded-lg ">
+          <!-- Single Post -->
+          <!-- ------------------------------------------------------------------------------------- -->
+
+          <div
+            class="max-w-2xl shadow-md rounded-lg overflow-hidden  border-gray-700 bg-gray-950"
+          >
+            <!-- Post Content -->
+            <div class="p-6 relative">
+              <!-- Three-dot Menu -->
+              <div class="absolute top-4 right-4">
+                <button
+                  class="text-gray-300 hover:text-gray-100 focus:outline-none"
+                  id="menu-button"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 6v.01M12 12v.01M12 18v.01"
+                    />
+                  </svg>
+                </button>
+                <!-- Menu Popup -->
+                <div
+                  id="menu-popup"
+                  class="hidden absolute right-0 mt-2 bg-gray-800 text-gray-300 rounded shadow-lg z-10"
+                >
+                  <ul>
+                    <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
+                      Edit
+                    </li>
+                    <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
+                      Delete
+                    </li>
+                    <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">
+                      Signal
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Author Info -->
+              <div class="flex items-center space-x-4 mb-4">
+                <img
+                  class="w-12 h-12 rounded-full object-cover"
+                  src="https://via.placeholder.com/150"
+                  alt="Author Image"
+                />
+                <div>
+                  <p class="text-white font-bold text-lg">John Doe</p>
+                  <p class="text-gray-400 text-sm">Created at: Dec 18, 2024</p>
+                </div>
+              </div>
+
+              <!-- Post Title -->
+              <h2 class="text-2xl font-semibold text-gray-100 mb-2">
+                The Art of Minimalism
+              </h2>
+
+              <!-- Post Content -->
+              <p class="text-gray-400 text-sm" id="post-content">
+                Minimalism is about removing the unnecessary to focus on what
+                truly matters. Learn how to simplify your life and embrace the
+                essentials...
+                <span id="full-content" class="hidden">
+                  Minimalism is not just about decluttering your home; it’s
+                  about decluttering your mind and soul. It is a philosophy that
+                  encourages intentional living and finding joy in simplicity.
+                </span>
+              </p>
+
+              <!-- Read More Button -->
+              <button
+                id="read-more-btn"
+                class="text-blue-400 text-sm font-medium hover:underline"
+              >
+                Read more
+              </button>
+            </div>
+
+            <!-- Post Image -->
+            <img
+              class="w-full h-64 object-cover"
+              src="https://via.placeholder.com/800x400"
+              alt="Post Image"
+            />
+
+            <!-- Buttons: Like and Comment -->
+            <div class="flex items-center justify-between p-4">
+              <div class="flex space-x-4">
+                <!-- Like Button -->
+                <button
+                  class="flex items-center space-x-1 text-gray-400 hover:text-red-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M14 9l-.882-3.528a1 1 0 00-.97-.772H9a1 1 0 00-.707.293l-3 3a1 1 0 00-.293.707v6a1 1 0 001 1h3v4a1 1 0 001 1h3a1 1 0 001-1v-4h3a1 1 0 001-1v-2.768a2 2 0 00-.586-1.414l-2-2A2 2 0 0014 9z"
+                    />
+                  </svg>
+                  <span class="text-sm">24</span>
+                </button>
+
+                <!-- Comment Button -->
+                <button
+                  class="flex items-center space-x-1 text-gray-400 hover:text-blue-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M3 10v11a1 1 0 001 1h7a1 1 0 001-1v-5h5a1 1 0 001-1V3a1 1 0 00-1-1H4a1 1 0 00-1 1v7z"
+                    />
+                  </svg>
+                  <span class="text-sm">12</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Comments Section -->
+          <div
+            class="comments-section rounded-lg p-6 bg-gray-900 text-gray-200  h-full max-h-[520px] overflow-y-scroll "
+          >
+            <!-- Add New Comment -->
+            <div>
+              <textarea
+                class="w-full p-3 rounded-md bg-gray-800 text-gray-200 placeholder-gray-400"
+                rows="3"
+                placeholder="Add a comment..."
+              ></textarea>
+              <button
+                class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md"
+              >
+                Post Comment
+              </button>
+            </div>
+            <h3 class="text-lg font-bold mb-4">Comments</h3>
+
+            <div class="space-y-4">
+              <!-- Comment 1 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">Jane Doe</p>
+                <p class="text-sm text-gray-400">
+                  This is a fantastic article on minimalism! Thank you for
+                  sharing.
+                </p>
+              </div>
+              <!-- Comment 2 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">John Smith</p>
+                <p class="text-sm text-gray-400">
+                  I’ve been looking to simplify my life, and this gave me great
+                  insights.
+                </p>
+              </div>
+              <!-- Comment 2 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">John Smith</p>
+                <p class="text-sm text-gray-400">
+                  I’ve been looking to simplify my life, and this gave me great
+                  insights.
+                </p>
+              </div>
+              <!-- Comment 2 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">John Smith</p>
+                <p class="text-sm text-gray-400">
+                  I’ve been looking to simplify my life, and this gave me great
+                  insights.
+                </p>
+              </div>
+              <!-- Comment 2 -->
+              <div class="p-4 bg-gray-800 rounded-md">
+                <p class="font-semibold">John Smith</p>
+                <p class="text-sm text-gray-400">
+                  I’ve been looking to simplify my life, and this gave me great
+                  insights.
+                </p>
+              </div>
+              <!-- Add more comments here -->
+            </div>
+          </div>
+
+          <!-- ------------------------------------------------------------------------------------- -->
+        </div>
+      </section>
+    </div>
+  </main>
+  <!-- Main Content -->
+</body>
