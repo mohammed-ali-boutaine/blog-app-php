@@ -2,7 +2,7 @@
 
 
 // Helper function to sanitize input
-function sanitize_input($data)
+function sanitize_input($data) 
 {
     return htmlspecialchars(stripslashes(trim($data)));
 }

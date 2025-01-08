@@ -1,5 +1,4 @@
 <?php
-// require_once 'Database.php';
 
 class Blog
 {
@@ -7,7 +6,7 @@ class Blog
 
      public function __construct(Database $database)
      {
-          $this->pdo = $database->getConnection();
+          $this->pdo = $database->connect();
      }
 
      public function create()
