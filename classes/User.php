@@ -1,124 +1,129 @@
+
+
 <?php
-require_once 'Database.php';
 
 
-class User
+abstract class User
 {
-     private PDO $pdo;
-     public function __construct(Database $database)
+
+     protected string $username;
+     protected string $email;
+     protected string $password;
+     protected string $picture_path;
+
+     function __construct($username, $email, $password, $picture_path)
      {
-          $this->pdo = $database->connect();
+          $this->username = $username;
+          $this->email = $email;
+          $this->password = $password;
+          $this->picture_path = $picture_path;
      }
 
-     public function updateProfil() {}
-
-
-
-     // blog events
-     public function getBlogs($userId){
+     static function generateToken($userId, $pdo): bool
+     {
           try {
 
+               // Generate and store a token
+               $token = bin2hex(random_bytes(16));
+               $ip_address = $_SERVER['REMOTE_ADDR'];
+               $browser = $_SERVER['HTTP_USER_AGENT'];
 
-               $query = "
-          SELECT 
-          a.id AS article_id,
-          a.title,
-          a.content,
-          a.image_path AS article_image,
-          a.created_at as datetime,
-          u.id AS user_id,
-          u.username AS username,
-          u.profile_picture AS user_picture,
-          c.id AS comment_id,
-          c.content AS comment_content,
-          c.created_at AS comment_date,
-          cu.id AS comment_user_id,
-          cu.username AS comment_username,
-          cu.profile_picture AS comment_user_picture,
-          (SELECT COUNT(*) FROM likes l WHERE l.article_id = a.id) AS like_count,
-          (SELECT COUNT(*) FROM commentaires c WHERE c.article_id = a.id) AS comment_count,
-          EXISTS (
-               SELECT 1
-               FROM likes l
-               WHERE l.article_id = a.id AND l.user_id = :userId
-          ) AS user_liked
-     FROM 
-          articles a
-     JOIN 
-          users u ON u.id = a.user_id
-     LEFT JOIN 
-          likes l ON l.article_id = a.id
-     LEFT JOIN 
-          commentaires c ON c.article_id = a.id
-     LEFT JOIN 
-          users cu ON cu.id = c.user_id
-     GROUP BY 
-          a.id, u.id, c.id, c.content, c.created_at, cu.id, cu.username, cu.profile_picture
-     ORDER BY 
-          c.created_at ASC;  ";
+               // insert token and info
+               $stmt = $pdo->prepare(
+                    "INSERT INTO user_logins (user_id, ip_address, browser, token) 
+               VALUES (:user_id, :ip_address, :browser, :token)"
+               );
+               $stmt->execute([
+                    'user_id' => $userId,
+                    'ip_address' => $ip_address,
+                    'browser' => $browser,
+                    'token' => $token,
+               ]);
 
+               // Set cookies
+               setcookie("user_id", $userId, time() + (86400 * 7), "/", "", true, true);
+               setcookie("auth_token", $token, time() + (86400 * 7), "/", "", true, true);
 
-     $stmt = $this->pdo->prepare($query);
-     $stmt->execute(["userId" => $userId]);
-
-     /*  u can also use 
-     $stmt->bindParam(':role_id', $roleId, PDO::PARAM_INT);
-     $stmt->execute();
-     
-     */
-
-               // Fetch the data as an associative array
-               $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-               $articles = [];
-               foreach ($result as $row) {
-                    $article_id = $row['article_id'];
-                    if (!isset($articles[$article_id])) {
-                         $articles[$article_id] = [
-                              'id' => $article_id,
-                              'title' => $row['title'],
-                              'datetime' => $row['datetime'],
-                              'content' => $row['content'],
-                              'image' => $row['article_image'],
-                              'author_name' => $row['username'],  // Correct key
-                              'author_picture' => $row['user_picture'],  // Correct key
-                              'user_liked' => $row['user_liked'],
-                              'like_count' => $row['like_count'],
-                              'comment_count' => $row['comment_count'],
-                              'comments' => []
-                         ];
-                    }
-                    if ($row['comment_id']) {
-                         $articles[$article_id]['comments'][] = [
-                              'content' => $row['comment_content'],
-                              'date' => $row['comment_date'],
-                              'user_name' => $row['comment_username'],  // Correct key
-                              'user_picture' => $row['comment_user_picture']  // Correct key
-                         ];
-                    }
-               }
-               return [ 
-                    "status"=>"succes",
-                    "ok"=>true ,
-                    "message" => "fetch succesflly",
-                    "data" => $articles
-               ];
+               return true;
           } catch (PDOException $e) {
-               return [ 
-                    "status"=>"error",
-                    "ok"=>false ,
-                    "message" => $e->getMessage()
-               ];
+
+               return false;
+          }
+     }
+
+     function findByEmail($pdo): array
+     {
+          try {
+
+               // Fetch the user by email
+               $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
+               $stmt->execute(['email' => $this->email]);
+
+               if ($stmt->rowCount() === 0) {
+                    return ['status' => 'error', 'message' => 'user Not Found', "ok" => false];
+               }
+               $user = $stmt->fetch(PDO::FETCH_ASSOC);
+               return ['status' => 'succes', 'message' => $user, "ok" => true];
+          } catch (PDOException $e) {
+               return ['status' => 'error', 'message' => 'Error fetching user: ' . $e->getMessage(), 'ok' => false];
           }
      }
 
 
+     function login($pdo): array
+     {
+          $response = $this->findByEmail($pdo);
+          if (!$response["ok"]) {
+               return $response;
+          }
 
-     public function createBlog() {}
-
-     public function deleteBlog() {}
-
-     public function updateBlog() {}
+          $user = $response["message"];
 
 
-     public function getBlogByUserId() {}
+          $paaswordIsValdie = password_verify($this->password, $user['password']);
+
+          // Verify the password
+          if ($paaswordIsValdie) {
+
+               // generate token and save it in user_login
+               $userId = $user["id"];
+
+               $createToken = self::generateToken($userId, $pdo);
+
+               if ($createToken) {
+                    return ['status' => 'success', 'message' => 'Logged in successfully', "ok" => true];
+               }
+
+               return ['status' => 'error', 'message' => 'Token Problem', "ok" => false];
+          } else if (!$paaswordIsValdie) {
+               return ['status' => 'error', 'message' => 'Invalid token', 'ok' => false];
+          }
+
+          return ['status' => "error", "message" => "Invalid password", "ok" => false];
+     }
+
+     public function logout($pdo): array
+     {
+          try {
+               // check if cookies exits
+               if (isset($_COOKIE['auth_token'])) {
+
+                    $auth_token = $_COOKIE['auth_token'];
+                    $stmt = $pdo->prepare(
+                         "UPDATE user_logins 
+                         SET is_active = 0, logout_time = NOW() 
+                         WHERE token = :token"
+                    );
+                    $stmt->execute(['token' => $auth_token]);
+                    setcookie("auth_token", "", time() - 3600, "/", "", true, true);
+                    setcookie("user_id", "", time() - 3600, "/", "", true, true);
+                    return ['status' => 'success', 'message' => 'Lougout succesfly', "ok" => true];
+               } else {
+
+                    return ['status' => 'success', 'message' => 'Error , No token found', "ok" => false];
+               }
+          } catch (PDOException $e) {
+               return ['status' => 'error', 'message' => 'Failed to register user: ' . $e->getMessage(), "ok" => false];
+          }
+     }
 }

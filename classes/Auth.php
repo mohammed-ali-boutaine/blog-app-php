@@ -19,7 +19,8 @@ class Auth
         try {
 
             // sanitization and validation
-            $username = filter_var($username);
+            $username = htmlspecialchars(strip_tags($username), ENT_QUOTES, 'UTF-8');
+            $email = filter_var($email, FILTER_SANITIZE_EMAIL);
 
 
             // Check if user already exists
@@ -90,21 +91,25 @@ class Auth
 
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        $paaswordIsValdie = password_verify($password, $user['password']);
+
         // Verify the password
-        if ($user && password_verify($password, $user['password'])) {
+        if ($user && $paaswordIsValdie ) {
             // Start a session for the user
             session_start();
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
 
             return ['status' => 'success', 'message' => 'Logged in successfully', "ok" => true];
+        }else if(!$paaswordIsValdie){
+            return ['status' => 'error', 'message' => 'Invalid token', 'ok' => false];
         }
 
         return ['status' => "error", "message" => "Invalid password", "ok" => false];
     }
 
     // Method to check authentication
-    public function checkAuth(): array {
+     function checkAuth(): array {
 
         try{
             if (isset($_COOKIE['user_id']) && isset($_COOKIE['auth_token'])) {
@@ -153,7 +158,6 @@ class Auth
 
         }
 
-        
     }
 
     // Method to log out a user
@@ -184,23 +188,4 @@ class Auth
     }
 }
 
-// Example Usage
-/*
-require_once 'Database.php';
-$database = new Database();
 
-$auth = new Auth($database);
-
-// Register a new user
-$response = $auth->register('JohnDoe', 'johndoe@example.com', 'securepassword', '/images/profile.jpg');
-print_r($response);
-
-// Log in
-echo $auth->login('johndoe@example.com', 'securepassword');
-
-// Check authentication
-var_dump($auth->checkAuth());
-
-// Log out
-$auth->logout();
-*/
