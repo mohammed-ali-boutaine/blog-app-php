@@ -1,0 +1,22 @@
+
+
+Classes:
+     ☐ create Blog class 
+          attributs : 
+               - user_id 
+               - title
+               - content
+               - picture_path
+          methodes :
+               -
+
+
+     ☐ create Blog class 
+
+     ☐ create Gust class 
+          - methodes : getBlogs()
+
+
+     ☐ create admin class 
+
+Pages :
