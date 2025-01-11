@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); // 32-byte random token
+}
+
+$csrf_token = $_SESSION['csrf_token'];
+
 
 // require '../db/conn.php';
 include "../functions/helper.php";
@@ -6,7 +14,6 @@ include "../classes/User.php";
 include "../classes/Database.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
     // get data from form
     $username = sanitize_input($_POST["username"]);
     $email = sanitize_input($_POST["email"]);
@@ -15,6 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $isValid = true;
     $error = "";
     $succes = "";
+    if (empty($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $error = "Invalid CSRF token.";
+        $isValid = false;
+    }
+
 
 
     // Validate form inputs
@@ -41,24 +53,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Construct the full path for the file
         $targetFilePath = $targetDir . $uniqueName;
 
-    // Allow only image file types
-    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
-    if (!in_array(strtolower($fileType), $allowedTypes)) {
-        $error = "Invalid file type. Only JPG, PNG, and GIF are allowed.";
-        $isValid = false;
-    }
-    // Check if the directory exists and create it if it doesn't
-    if (!is_dir($targetDir)) {
-        if (!mkdir($targetDir, 0777, true)) {
-            $error = "Failed to create the directory.";
+        // Allow only image file types
+        $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+        if (!in_array(strtolower($fileType), $allowedTypes)) {
+            $error = "Invalid file type. Only JPG, PNG, and GIF are allowed.";
             $isValid = false;
         }
-    }
-         // Move file to the target directory
-    if ($isValid && !move_uploaded_file($_FILES["profile_image"]["tmp_name"], $targetFilePath)) {
-        $error = "Failed to upload profile image.";
-        $isValid = false;
-    }
+        // Check if the directory exists and create it if it doesn't
+        if (!is_dir($targetDir)) {
+            if (!mkdir($targetDir, 0777, true)) {
+                $error = "Failed to create the directory.";
+                $isValid = false;
+            }
+        }
+        // Move file to the target directory
+        if ($isValid && !move_uploaded_file($_FILES["profile_image"]["tmp_name"], $targetFilePath)) {
+            $error = "Failed to upload profile image.";
+            $isValid = false;
+        }
     } else {
         $error = "Profile image is required.";
         $isValid = false;
@@ -69,18 +81,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $db = new Database();
         $pdo = $db->connect();
-        $user = new User($pdo,$username,$email,$password,$targetFilePath);
+        $user = new User($pdo, $username, $email, $password, $targetFilePath);
         $response = $user->register();
 
-        if($response["ok"]){
+        if ($response["ok"]) {
             $success = $response["message"];
-
-        }else{
+        } else {
             $error = $response["message"];
         }
-
-
     }
+
+    session_destroy();
 }
 ?>
 <!DOCTYPE html>
@@ -103,10 +114,16 @@ include "./inc/nav.php";
     <div class="w-full max-w-sm bg-white rounded-lg shadow-md p-6">
         <form method="POST" enctype="multipart/form-data" class="space-y-6">
             <h2 class="text-2xl font-bold text-gray-800 text-center">Register</h2>
+            <!-- CSRF Token -->
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
 
             <?php if (!empty($error)): ?>
                 <div class="bg-red-500 text-white text-sm p-3 rounded-md">
                     <?= htmlspecialchars($error) ?>
+                </div>
+            <?php elseif (!empty($success)): ?>
+                <div class="bg-green-500 text-white text-sm p-3 rounded-md">
+                    <?= htmlspecialchars($success) ?>
                 </div>
             <?php endif; ?>
 
@@ -176,7 +193,48 @@ include "./inc/nav.php";
     </div>
 </div>
 
+ <script>
+        document.querySelector("form").addEventListener("submit", function(event) {
+            const username = document.getElementById("username");
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+            const profileImage = document.getElementById("profile_image");
+            let isValid = true;
+            let errorMessage = "";
 
+            if (username.value.trim() === "") {
+                isValid = false;
+                errorMessage += "Username is required.\n";
+            }
+
+            // Email validation (no pattern)
+            if (email.value.trim() === "") {
+                isValid = false;
+                errorMessage += "Email is required.\n";
+            } else if (!email.value.includes('@')) {
+                isValid = false;
+                errorMessage += "Email must contain '@'.\n";
+            }
+
+            if (password.value.trim() === "") {
+                isValid = false;
+                errorMessage += "Password is required.\n";
+            } else if (password.value.length < 6) {
+                isValid = false;
+                errorMessage += "Password must be at least 6 characters long.\n";
+            }
+
+            if (profileImage.files.length === 0) {
+                isValid = false;
+                errorMessage += "Profile image is required.\n";
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+                alert(errorMessage);
+            }
+        });
+    </script>
 
 
 
