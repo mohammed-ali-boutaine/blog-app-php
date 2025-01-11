@@ -16,7 +16,7 @@ class Database
         PDO::ATTR_EMULATE_PREPARES => false, // Use native prepared statements
     ];
 
-    public function connect()
+     public function connect()
     {
         if ($this->pdo === null) {
 

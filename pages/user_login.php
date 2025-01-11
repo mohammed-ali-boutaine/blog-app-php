@@ -1,6 +1,6 @@
 <?php
-require '../db/conn.php';
-include "../functions/helpers.php";
+// require '../db/conn.php';
+include "../functions/helper.php";
 
 
 

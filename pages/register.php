@@ -1,7 +1,7 @@
 <?php
 
 require_once "../functions/helper.php";
-require "../classes/Auth.php";
+// require "../classes/Auth.php";
 require "../classes/Database.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

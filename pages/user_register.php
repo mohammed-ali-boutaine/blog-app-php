@@ -1,7 +1,9 @@
 <?php
 
-require '../db/conn.php';
-include "../functions/helpers.php";
+// require '../db/conn.php';
+include "../functions/helper.php";
+include "../classes/User.php";
+include "../classes/Database.php";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -12,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $isValid = true;
     $error = "";
+    $succes = "";
 
 
     // Validate form inputs
@@ -64,49 +67,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if ($isValid) {
 
-        // check if email exists
-        $stmt = $conn->prepare("SELECT id FROM users WHERE email = ? ");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $existingUser  = $result->fetch_assoc();
+        $db = new Database();
+        $pdo = $db->connect();
+        $user = new User($pdo,$username,$email,$password,$targetFilePath);
+        $response = $user->register();
 
+        if($response["ok"]){
+            $success = $response["message"];
 
-        if ($existingUser) {
-            $error = "this email aleardy exists";
-        } else {
-            // hash password
-
-            $password = password_hash($password, PASSWORD_DEFAULT);
-
-            $stmt = $conn->prepare("INSERT INTO users (username, email, password, profile_picture) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $username, $email, $password, $targetFilePath);
-            $stmt->execute();
-
-            // Retrieve the newly inserted user ID
-            $userId = $conn->insert_id;
-
-
-            // insert token and user after check if email not exists
-            $token = bin2hex(random_bytes(16));
-            $ip_address = $_SERVER['REMOTE_ADDR'];
-            $browser = $_SERVER['HTTP_USER_AGENT'];
-
-            // Insert into userLogin table
-            $stmt = $conn->prepare("INSERT INTO user_logins (user_id, ip_address, browser, token) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("isss", $userId, $ip_address, $browser, $token);
-            $stmt->execute();
-
-            // Set cookies
-            setcookie("user_id", $userId, time() + (86400 * 7), "/", "", true, true);
-            setcookie("auth_token", $token, time() + (86400 * 7), "/", "", true, true);
-
-            header("Location: ../index.php");
-            exit;
+        }else{
+            $error = $response["message"];
         }
 
 
-        $stmt->close();
     }
 }
 ?>

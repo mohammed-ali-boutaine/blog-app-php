@@ -8,6 +8,7 @@ class Blog
      private $content; // optinel
      private $image_path; // optienl
      private $comments = [];
+     private $likes = [] ;
 
      public function __construct($userId, $title, $content = null, $image_path = null)
      {
