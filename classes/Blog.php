@@ -8,7 +8,7 @@ class Blog
      private $content; // optinel
      private $image_path; // optienl
      private $comments = [];
-     private $likes = [] ;
+     private $likes = [];
 
      public function __construct($userId, $title, $content = null, $image_path = null)
      {
@@ -35,13 +35,16 @@ class Blog
 
 
 
-     public function update($pdo) {}
-
-     public function delete($pdo,$id)
+     public function update($pdo, $id, $data)
      {
-          $sql = "DELETE FROM clients WHERE id = :id";
+          $sql = "UPDATE blogs SET title = :title, content = :content, image_path = :image_path WHERE id = :id";
           $stmt = $pdo->prepare($sql);
-          return $stmt->execute(['id' => $id]);
+          return $stmt->execute([
+               'title' => $data['title'] ?? $this->title,
+               'content' => $data['content'] ?? $this->content,
+               'image_path' => $data['image_path'] ?? $this->image_path,
+               'id' => $id
+          ]);
      }
 
      static public function getAll($pdo)
@@ -50,6 +53,45 @@ class Blog
           $stmt = $pdo->query($sql);
           return $stmt->fetchAll(PDO::FETCH_ASSOC);
      }
+
+     public function delete($pdo, $id)
+     {
+          $sql = "DELETE FROM clients WHERE id = :id";
+          $stmt = $pdo->prepare($sql);
+          return $stmt->execute(['id' => $id]);
+     }
+
+     
+     static public function getById($pdo, $id)
+     {
+          $sql = "SELECT * FROM blogs WHERE id = :id";
+          $stmt = $pdo->prepare($sql);
+          $stmt->execute(['id' => $id]);
+          return $stmt->fetch(PDO::FETCH_ASSOC);
+     }
+
+     public function addComment($comment)
+     {
+          $this->comments[] = $comment;
+     }
+
+     public function getComments()
+     {
+          return $this->comments;
+     }
+
+     public function addLike($userId)
+     {
+          if (!in_array($userId, $this->likes)) {
+               $this->likes[] = $userId;
+          }
+     }
+
+     public function getLikes()
+     {
+          return count($this->likes);
+     }
+
+
+
 }
-
-

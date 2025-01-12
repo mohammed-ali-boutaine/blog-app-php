@@ -7,7 +7,7 @@ require_once __DIR__."\Person.php";
 class User extends Person
 {
 
-    // blogger has blogs
+    // user has blogs
     private $blogs = [];
 
     function __construct($pdo,$username, $email, $password, $picture_path)
@@ -15,7 +15,9 @@ class User extends Person
         parent::__construct($pdo,$username, $email, $password, $picture_path);
     }
 
+    // getter and setter :
 
+    // register user
     public function register(): array
     {
         try {
@@ -59,4 +61,22 @@ class User extends Person
             return ['status' => 'error', 'message' => $message, "ok" => false];
         }
     }
+
+    // get blogs
+
+    function getBlogs(){
+        return $this->blogs;
+    }
+    function setBlogs( $blogs){
+        $this->blogs = $blogs;
+    }
 }
+
+
+$db = new Database();
+$pdo = $db->connect();
+
+$user = new User($pdo,"ali","ali@glail.com","ali",null);
+
+$user->setBlogs([1,2,3,4,5,6,7,8,9]);
+$user->getBlogs();
